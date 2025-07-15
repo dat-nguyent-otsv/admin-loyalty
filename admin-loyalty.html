@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - ONE Loyalty Program</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            /* Primary Palette (Magenta) */
+            --one-primary-100: #F8E7F1;
+            --one-primary-700: #E6007E;
+            --one-primary-800: #8A0B5C;
+            
+            /* Secondary Palette (Teal) */
+            --one-secondary-100: #E2F2F1;
+            --one-secondary-400: #5AA7AD;
+            --one-secondary-600: #2F728C;
+            --one-secondary-900: #033246;
+
+            /* Neutral Palette (Gray) */
+            --one-neutral-100: #F5F7FA;
+            --one-neutral-200: #DBDDE5;
+            --one-neutral-700: #555A61;
+            --one-neutral-900: #333333;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--one-neutral-100);
+        }
+        .admin-sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.25rem;
+            color: var(--one-neutral-700);
+            font-weight: 500;
+            border-radius: 0.5rem;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .admin-sidebar-link:hover {
+            background-color: var(--one-secondary-100);
+            color: var(--one-secondary-900);
+        }
+        .admin-sidebar-link.active {
+            background-color: var(--one-secondary-600);
+            color: white;
+        }
+        .admin-sidebar-link i {
+            width: 20px;
+            margin-right: 0.75rem;
+        }
+        .table-header {
+            background-color: #f9fafb;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #6b7280;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <div class="flex min-h-screen">
+        <!-- Sidebar Navigation -->
+        <aside class="w-64 bg-white border-r border-gray-200 p-4">
+            <div class="flex items-center mb-8">
+                <img src="https://www.one-line.com/sites/one/files/one_logo_rgb_1.png" alt="ONE Logo" class="h-6 mr-2" onerror="this.onerror=null;this.src='https://placehold.co/100x24/e8e8e8/000000?text=ONE';">
+                <span class="font-bold text-lg">Admin Panel</span>
+            </div>
+            <nav class="flex flex-col space-y-2">
+                <a href="#dashboard" class="admin-sidebar-link active" data-target="dashboard">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#manual-adjust" class="admin-sidebar-link" data-target="manual-adjust">
+                    <i class="fas fa-wrench"></i>
+                    <span>Manual Adjust Tool</span>
+                </a>
+                <a href="#exceptions" class="admin-sidebar-link" data-target="exceptions">
+                    <i class="fas fa-globe"></i>
+                    <span>Exception Rules</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content Wrapper -->
+        <div class="flex-1 flex flex-col">
+            <!-- Top Header -->
+            <header class="bg-white border-b border-gray-200">
+                <div class="px-8 py-4 flex justify-between items-center">
+                    <h1 id="page-title" class="text-xl font-bold">Coupon & Tier Dashboard</h1>
+                    <div class="flex items-center space-x-4">
+                        <span class="text-sm">Welcome, Admin User</span>
+                        <i class="fas fa-user-circle text-2xl text-gray-400"></i>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Content Area -->
+            <main class="flex-1 p-8">
+                <!-- Dashboard Section -->
+                <div id="dashboard" class="admin-section">
+                    <!-- Customer List View -->
+                    <div id="customer-list-view">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                            <div class="bg-white p-6 rounded-lg shadow-sm border">
+                                <h3 class="text-sm font-medium text-gray-500">Total Coupons Issued</h3>
+                                <p class="text-3xl font-bold mt-1">1,482</p>
+                            </div>
+                            <div class="bg-white p-6 rounded-lg shadow-sm border">
+                                <h3 class="text-sm font-medium text-gray-500">Coupons Redeemed (Quarter)</h3>
+                                <p class="text-3xl font-bold mt-1">319</p>
+                            </div>
+                            <div class="bg-white p-6 rounded-lg shadow-sm border">
+                                <h3 class="text-sm font-medium text-gray-500">Upcoming Expiries (7 days)</h3>
+                                <p class="text-3xl font-bold mt-1">78</p>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white p-6 rounded-lg shadow-sm border">
+                            <h3 class="text-lg font-bold mb-4">Customer Loyalty Overview</h3>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-sm">
+                                    <thead class="table-header">
+                                        <tr>
+                                            <th class="p-3 text-left">Customer ID</th>
+                                            <th class="p-3 text-left">Company Name</th>
+                                            <th class="p-3 text-left">Current Tier</th>
+                                            <th class="p-3 text-left">TEUs (This Qtr)</th>
+                                            <th class="p-3 text-left">Available Coupons</th>
+                                            <th class="p-3 text-left">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="border-b">
+                                            <td class="p-3">CUST-00123</td>
+                                            <td class="p-3 font-medium">Global Shipping Co.</td>
+                                            <td class="p-3"><span class="font-semibold text-one-magenta">Silver Sail</span></td>
+                                            <td class="p-3">45</td>
+                                            <td class="p-3">2</td>
+                                            <td class="p-3"><button class="view-details-btn text-[var(--one-secondary-600)] font-bold text-xs">View Details</button></td>
+                                        </tr>
+                                        <tr class="border-b">
+                                            <td class="p-3">CUST-00456</td>
+                                            <td class="p-3 font-medium">Oceanic Traders</td>
+                                            <td class="p-3"><span class="font-semibold text-yellow-600">Golden Sea</span></td>
+                                            <td class="p-3">72</td>
+                                            <td class="p-3">4</td>
+                                            <td class="p-3"><button class="view-details-btn text-[var(--one-secondary-600)] font-bold text-xs">View Details</button></td>
+                                        </tr>
+                                        <tr class="border-b">
+                                            <td class="p-3">CUST-00789</td>
+                                            <td class="p-3 font-medium">Trans-Pacific Logistics</td>
+                                            <td class="p-3"><span class="font-semibold text-blue-600">Blue Wave</span></td>
+                                            <td class="p-3">8</td>
+                                            <td class="p-3">1</td>
+                                            <td class="p-3"><button class="view-details-btn text-[var(--one-secondary-600)] font-bold text-xs">View Details</button></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Customer Detail View (Initially Hidden) -->
+                    <div id="customer-detail-view" class="hidden">
+                        <button id="back-to-list-btn" class="mb-4 text-sm font-bold text-[var(--one-secondary-600)] hover:underline"><i class="fas fa-arrow-left mr-2"></i>Back to Customer List</button>
+                        <div class="bg-white p-6 rounded-lg shadow-sm border">
+                            <h3 class="text-lg font-bold mb-1">CUST-00123 - Global Shipping Co.</h3>
+                            <p class="text-sm text-gray-500 mb-6">Loyalty History & Performance</p>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <!-- Left Column: Tier & Progress -->
+                                <div>
+                                    <h4 class="font-bold mb-4">Current Status (Q3 2025)</h4>
+                                    <div class="bg-[var(--one-neutral-100)] border-l-4 border-one-magenta p-4 rounded-r-lg mb-6">
+                                        <p class="font-bold text-gray-800">Current Tier: Silver Sail</p>
+                                        <p class="text-sm text-gray-600">Earns $40 coupon per 10 TEUs.</p>
+                                    </div>
+                                    <h4 class="font-bold mb-2">Progress to Golden Sea</h4>
+                                    <div class="w-full bg-gray-200 rounded-full h-4 mb-1">
+                                        <div class="bg-gradient-to-r from-[var(--one-secondary-400)] to-[var(--one-secondary-600)] h-4 rounded-full" style="width: 75%"></div>
+                                    </div>
+                                    <p class="text-sm text-right text-gray-600">45 / 60 TEU</p>
+
+                                    <h4 class="font-bold mt-8 mb-4">Tier History</h4>
+                                    <table class="w-full text-sm">
+                                        <thead class="table-header">
+                                            <tr><th class="p-2 text-left">Quarter</th><th class="p-2 text-left">Tier</th><th class="p-2 text-left">Final TEUs</th></tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr class="border-b"><td class="p-2">Q2 2025</td><td class="p-2">Silver Sail</td><td class="p-2">42</td></tr>
+                                            <tr class="border-b"><td class="p-2">Q1 2025</td><td class="p-2">Blue Wave</td><td class="p-2">25</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <!-- Right Column: Coupon History -->
+                                <div>
+                                    <h4 class="font-bold mb-4">Coupon History</h4>
+                                    <div class="overflow-y-auto h-96">
+                                        <table class="w-full text-sm">
+                                            <thead class="table-header sticky top-0">
+                                                <tr><th class="p-2 text-left">Coupon</th><th class="p-2 text-left">Value</th><th class="p-2 text-left">Status</th><th class="p-2 text-left">Date</th></tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr class="border-b"><td class="p-2">PERFORM40</td><td class="p-2">$40</td><td class="p-2"><span class="bg-green-100 text-green-800 text-xs font-medium px-2 py-0.5 rounded-full">Available</span></td><td class="p-2">15 Jul 2025</td></tr>
+                                                <tr class="border-b"><td class="p-2">QUARTERLY40</td><td class="p-2">$40</td><td class="p-2"><span class="bg-green-100 text-green-800 text-xs font-medium px-2 py-0.5 rounded-full">Available</span></td><td class="p-2">01 Jul 2025</td></tr>
+                                                <tr class="border-b"><td class="p-2">PERFORM40</td><td class="p-2">$40</td><td class="p-2"><span class="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-0.5 rounded-full">Redeemed</span></td><td class="p-2">18 Jun 2025</td></tr>
+                                                <tr class="border-b"><td class="p-2">PERFORM40</td><td class="p-2">$40</td><td class="p-2"><span class="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-0.5 rounded-full">Redeemed</span></td><td class="p-2">05 May 2025</td></tr>
+                                                <tr class="border-b"><td class="p-2">QUARTERLY20</td><td class="p-2">$20</td><td class="p-2"><span class="bg-red-100 text-red-800 text-xs font-medium px-2 py-0.5 rounded-full">Expired</span></td><td class="p-2">01 Apr 2025</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Manual Adjust Section -->
+                <div id="manual-adjust" class="admin-section hidden">
+                    <div class="bg-white p-6 rounded-lg shadow-sm border">
+                        <h3 class="text-lg font-bold mb-4">Manual Adjustment Tool</h3>
+                        <div class="max-w-md mb-6">
+                            <label for="customer-search" class="block text-sm font-medium text-gray-700 mb-1">Find Customer</label>
+                            <div class="flex space-x-2">
+                                <input type="text" id="customer-search" class="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="Enter Customer ID or Name">
+                                <button class="bg-[var(--one-secondary-600)] text-white font-bold py-2 px-4 rounded-md hover:bg-[var(--one-secondary-900)] transition">Search</button>
+                            </div>
+                        </div>
+                        
+                        <div class="border-t pt-6">
+                            <h4 class="font-bold mb-2">Customer Details: CUST-00123 (Global Shipping Co.)</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Current Tier</label>
+                                    <p class="font-bold">Silver Sail</p>
+                                    <label for="tier-override" class="block text-sm font-medium text-gray-700 mt-4">Override Tier</label>
+                                    <select id="tier-override" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                                        <option>No Change</option>
+                                        <option>Blue Wave</option>
+                                        <option selected>Silver Sail</option>
+                                        <option>Golden Sea</option>
+                                        <option>Million Magenta</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Issue Manual Coupon</label>
+                                    <div class="flex items-center space-x-2 mt-2">
+                                        <input type="text" placeholder="Coupon Value ($)" class="w-1/2 px-3 py-2 border border-gray-300 rounded-md">
+                                        <input type="text" placeholder="Reason (e.g., MKT2025)" class="w-1/2 px-3 py-2 border border-gray-300 rounded-md">
+                                    </div>
+                                </div>
+                            </div>
+                             <div class="mt-6 flex justify-end">
+                                <button class="bg-one-magenta text-white font-bold py-2 px-6 rounded-md hover:bg-one-magenta-dark transition">Apply Changes</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exception Rules Section -->
+                <div id="exceptions" class="admin-section hidden">
+                    <div class="bg-white p-6 rounded-lg shadow-sm border">
+                        <h3 class="text-lg font-bold mb-4">Country Exception Rule Configuration</h3>
+                        <div class="mb-6 border-b pb-6">
+                             <h4 class="font-bold mb-2">Add New Exception</h4>
+                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                 <input type="text" placeholder="Country (e.g., China)" class="px-3 py-2 border border-gray-300 rounded-md">
+                                 <select class="px-3 py-2 border border-gray-300 rounded-md">
+                                     <option>Restrict Coupon Eligibility</option>
+                                     <option>Apply Reduced Value</option>
+                                 </select>
+                                 <button class="bg-[var(--one-secondary-600)] text-white font-bold py-2 px-4 rounded-md hover:bg-[var(--one-secondary-900)] transition">Add Rule</button>
+                             </div>
+                        </div>
+                        <div>
+                            <h4 class="font-bold mb-2">Current Rules</h4>
+                            <ul class="space-y-2">
+                                <li class="flex justify-between items-center p-3 bg-gray-50 rounded-md">
+                                    <div>
+                                        <p class="font-medium">China</p>
+                                        <p class="text-sm text-gray-500">Coupon eligibility is restricted.</p>
+                                    </div>
+                                    <button class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button>
+                                </li>
+                                <li class="flex justify-between items-center p-3 bg-gray-50 rounded-md">
+                                    <div>
+                                        <p class="font-medium">Brazil</p>
+                                        <p class="text-sm text-gray-500">Coupon eligibility is restricted.</p>
+                                    </div>
+                                    <button class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const links = document.querySelectorAll('.admin-sidebar-link');
+            const sections = document.querySelectorAll('.admin-section');
+            const pageTitle = document.getElementById('page-title');
+            
+            const customerListView = document.getElementById('customer-list-view');
+            const customerDetailView = document.getElementById('customer-detail-view');
+            const viewDetailsButtons = document.querySelectorAll('.view-details-btn');
+            const backToListBtn = document.getElementById('back-to-list-btn');
+
+            const sectionTitles = {
+                'dashboard': 'Coupon & Tier Dashboard',
+                'manual-adjust': 'Manual Adjustment Tool',
+                'exceptions': 'Exception Rule Configuration'
+            };
+
+            // Main navigation logic
+            links.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const targetId = this.dataset.target;
+
+                    // Update active link
+                    links.forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+
+                    // Show target section
+                    sections.forEach(section => {
+                        if (section.id === targetId) {
+                            section.classList.remove('hidden');
+                        } else {
+                            section.classList.add('hidden');
+                        }
+                    });
+                     // Always show the list view when switching main tabs
+                    customerListView.classList.remove('hidden');
+                    customerDetailView.classList.add('hidden');
+
+                    // Update page title
+                    pageTitle.textContent = sectionTitles[targetId];
+                });
+            });
+
+            // Customer detail view logic
+            viewDetailsButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    customerListView.classList.add('hidden');
+                    customerDetailView.classList.remove('hidden');
+                    pageTitle.textContent = 'Customer Loyalty Details';
+                });
+            });
+
+            backToListBtn.addEventListener('click', () => {
+                customerDetailView.classList.add('hidden');
+                customerListView.classList.remove('hidden');
+                pageTitle.textContent = sectionTitles['dashboard'];
+            });
+        });
+    </script>
+
+</body>
+</html>
