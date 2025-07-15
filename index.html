@@ -7,6 +7,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Litepicker CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/litepicker/dist/css/litepicker.css"/>
     <style>
         :root {
             /* Primary Palette (Magenta) */
@@ -59,6 +61,13 @@
             letter-spacing: 0.05em;
             color: #6b7280;
         }
+        .filter-input {
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            background-color: white;
+        }
     </style>
 </head>
 <body class="text-gray-800">
@@ -106,22 +115,54 @@
                     <!-- Customer List View -->
                     <div id="customer-list-view">
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                            <div class="bg-white p-6 rounded-lg shadow-sm border">
-                                <h3 class="text-sm font-medium text-gray-500">Total Coupons Issued</h3>
-                                <p class="text-3xl font-bold mt-1">1,482</p>
+                            <!-- Total Coupons Issued -->
+                            <div class="bg-white p-6 rounded-lg shadow-sm border flex items-center space-x-4">
+                                <div class="bg-[var(--one-secondary-100)] p-4 rounded-full">
+                                    <i class="fas fa-tags fa-2x text-[var(--one-secondary-600)]"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-sm font-medium text-gray-500">Total Coupons Issued</h3>
+                                    <p class="text-3xl font-bold mt-1">1,482</p>
+                                    <p class="text-xs text-gray-400 mt-1">+52 this week</p>
+                                </div>
                             </div>
-                            <div class="bg-white p-6 rounded-lg shadow-sm border">
-                                <h3 class="text-sm font-medium text-gray-500">Coupons Redeemed (Quarter)</h3>
-                                <p class="text-3xl font-bold mt-1">319</p>
+                            <!-- Coupons Redeemed -->
+                            <div class="bg-white p-6 rounded-lg shadow-sm border flex items-center space-x-4">
+                                <div class="bg-[var(--one-secondary-100)] p-4 rounded-full">
+                                    <i class="fas fa-check-circle fa-2x text-[var(--one-secondary-600)]"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-sm font-medium text-gray-500">Coupons Redeemed (Qtr)</h3>
+                                    <p class="text-3xl font-bold mt-1">319</p>
+                                    <p class="text-xs text-gray-400 mt-1">21.5% redemption rate</p>
+                                </div>
                             </div>
-                            <div class="bg-white p-6 rounded-lg shadow-sm border">
-                                <h3 class="text-sm font-medium text-gray-500">Upcoming Expiries (7 days)</h3>
-                                <p class="text-3xl font-bold mt-1">78</p>
+                            <!-- Upcoming Expiries -->
+                            <div class="bg-white p-6 rounded-lg shadow-sm border flex items-center space-x-4">
+                                <div class="bg-[var(--one-primary-100)] p-4 rounded-full">
+                                    <i class="fas fa-hourglass-half fa-2x text-one-magenta"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-sm font-medium text-gray-500">Upcoming Expiries (7d)</h3>
+                                    <p class="text-3xl font-bold mt-1">78</p>
+                                    <p class="text-xs text-gray-400 mt-1">Action may be required</p>
+                                </div>
                             </div>
                         </div>
                         
                         <div class="bg-white p-6 rounded-lg shadow-sm border">
-                            <h3 class="text-lg font-bold mb-4">Customer Loyalty Overview</h3>
+                            <div class="flex flex-wrap justify-between items-center mb-4 gap-4">
+                                <h3 class="text-lg font-bold">Customer Loyalty Overview</h3>
+                                <div class="flex items-center gap-4">
+                                    <div class="relative">
+                                        <input type="text" placeholder="Search Customer..." class="filter-input w-48 pl-8">
+                                        <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                                    </div>
+                                    <div class="relative">
+                                        <input type="text" id="date-range-picker" class="filter-input w-64 cursor-pointer" readonly placeholder="Select Date Range">
+                                    </div>
+                                </div>
+                            </div>
                             <div class="overflow-x-auto">
                                 <table class="w-full text-sm">
                                     <thead class="table-header">
@@ -302,8 +343,15 @@
         </div>
     </div>
 
+    <!-- Litepicker JS and dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1/plugin/quarterOfYear.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/litepicker/dist/litepicker.js"></script>
+    
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            dayjs.extend(window.dayjs_plugin_quarterOfYear);
+
             const links = document.querySelectorAll('.admin-sidebar-link');
             const sections = document.querySelectorAll('.admin-section');
             const pageTitle = document.getElementById('page-title');
@@ -318,6 +366,40 @@
                 'manual-adjust': 'Manual Adjustment Tool',
                 'exceptions': 'Exception Rule Configuration'
             };
+
+            // Date range picker logic
+            const picker = new Litepicker({
+                element: document.getElementById('date-range-picker'),
+                singleMode: false,
+                autoApply: true,
+                format: 'DD MMM, YYYY',
+                plugins: ['ranges'],
+                buttonText: {
+                    previousMonth: `<i class="fas fa-chevron-left"></i>`,
+                    nextMonth: `<i class="fas fa-chevron-right"></i>`,
+                    apply: 'Apply',
+                    cancel: 'Cancel',
+                },
+                ranges: {
+                    customRanges: {
+                        'This Quarter': [dayjs().startOf('quarter'), dayjs().endOf('quarter')],
+                        'Last Quarter': [dayjs().subtract(1, 'quarter').startOf('quarter'), dayjs().subtract(1, 'quarter').endOf('quarter')],
+                        'Last 30 Days': [dayjs().subtract(29, 'day'), dayjs()],
+                        'This Year': [dayjs().startOf('year'), dayjs().endOf('year')],
+                    }
+                },
+                setup: (picker) => {
+                    // Set initial value
+                    const initialStart = dayjs().startOf('quarter');
+                    const initialEnd = dayjs().endOf('quarter');
+                    picker.setDateRange(initialStart, initialEnd);
+                    document.getElementById('date-range-picker').value = `${initialStart.format('DD MMM, YYYY')} - ${initialEnd.format('DD MMM, YYYY')}`;
+                    
+                    picker.on('selected', (date1, date2) => {
+                         document.getElementById('date-range-picker').value = `${date1.format('DD MMM, YYYY')} - ${date2.format('DD MMM, YYYY')}`;
+                    });
+                },
+            });
 
             // Main navigation logic
             links.forEach(link => {
